@@ -1,77 +1,67 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
-namespace mineText
+namespace Minesweeper
 {
     class Program
     {
         static void Main(string[] args)
         {
+            // Define the minefield
             string[,] map = {
-            {"*", ".", ".", "."},
-            {".", ".", ".", "."},
-            {".", "*", ".", "."},
-            {".", ".", ".", "."}
-        };
-            int MAP_HEIGHT = map.GetLength(0);
-            int MAP_WIDTH = map.GetLength(1);
+                {"*", ".", ".", "."},
+                {".", ".", ".", "."},
+                {".", "*", ".", "."},
+                {".", ".", ".", "."}
+            };
 
-            string[,] mapReport = new string[MAP_HEIGHT, MAP_WIDTH];
-            for (int yOrdinate = 0; yOrdinate < MAP_HEIGHT; yOrdinate++)
+            // Get the dimensions of the minefield
+            int height = map.GetLength(0);
+            int width = map.GetLength(1);
+
+            // Iterate over each cell in the minefield
+            for (int y = 0; y < height; y++)
             {
-                for (int xOrdinate = 0; xOrdinate < map.GetLength(0); xOrdinate++)
+                for (int x = 0; x < width; x++)
                 {
-                    string curentCell = map[yOrdinate, xOrdinate];
-                    if (curentCell.Equals("*"))
+                    // If the cell contains a mine, output an asterisk
+                    if (map[y, x] == "*")
                     {
-                        mapReport[yOrdinate, xOrdinate] = "*";
+                        Console.Write("*");
                     }
+                    // Otherwise, count the number of neighboring mines and output the count
                     else
                     {
-                        int[,] NEIGHBOURS_ORDINATE = {
-                        {yOrdinate - 1, xOrdinate - 1}, {yOrdinate - 1, xOrdinate}, {yOrdinate - 1, xOrdinate + 1},
-                        {yOrdinate, xOrdinate - 1}, {yOrdinate, xOrdinate + 1},
-                        {yOrdinate + 1, xOrdinate - 1}, {yOrdinate + 1, xOrdinate}, {yOrdinate + 1, xOrdinate + 1},};
+                        // Start with a count of 0
+                        int count = 0;
 
-                        int minesAround = 0;
-                        int length = NEIGHBOURS_ORDINATE.GetLength(0);
-                        for (int i = 0; i < length; i++)
+                        // Iterate over the cells surrounding the current cell
+                        for (int dy = -1; dy <= 1; dy++)
                         {
-                            int xOrdinateOfNeighbour = NEIGHBOURS_ORDINATE[i, 1];
-                            int yOrdinateOfNeighbour = NEIGHBOURS_ORDINATE[i, 0];
-
-                            bool isOutOfMapNeighbour = xOrdinateOfNeighbour < 0
-                                    || xOrdinateOfNeighbour == MAP_WIDTH
-                                    || yOrdinateOfNeighbour < 0
-                                    || yOrdinateOfNeighbour == MAP_HEIGHT;
-                            if (isOutOfMapNeighbour)
+                            for (int dx = -1; dx <= 1; dx++)
                             {
-                                continue;
-                            }
+                                // Calculate the coordinates of the neighboring cell
+                                int yy = y + dy;
+                                int xx = x + dx;
 
-                            bool isMineOwnerNeighbour = map[yOrdinateOfNeighbour, xOrdinateOfNeighbour].Equals("*");
-                            if (isMineOwnerNeighbour)
-                            {
-                                minesAround++;
+                                // Check if the neighboring cell is within the minefield
+                                bool isWithinField = xx >= 0 && xx < width && yy >= 0 && yy < height;
+
+                                // If the neighboring cell is within the minefield and contains a mine, increment the count
+                                if (isWithinField && map[yy, xx] == "*")
+                                {
+                                    count++;
+                                }
                             }
                         }
 
-                        mapReport[yOrdinate, xOrdinate] = minesAround.ToString();
+                        // Output the count for the current cell
+                        Console.Write(count);
                     }
                 }
+                Console.WriteLine();
             }
 
-            for (int yOrdinate = 0; yOrdinate < MAP_HEIGHT; yOrdinate++)
-            {
-                Console.WriteLine("\n");
-                for (int xOrdinate = 0; xOrdinate < MAP_WIDTH; xOrdinate++)
-                {
-                    String currentCellReport = mapReport[yOrdinate, xOrdinate];
-                    Console.Write(currentCellReport);
-                }
-            }
+            // Wait for the user to press a key before exiting
             Console.ReadLine();
         }
     }
